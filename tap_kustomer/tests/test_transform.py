@@ -4,8 +4,7 @@ import re
 import singer
 from tap_kustomer.transform import denest
 from tap_kustomer.transform import transform_json
-from tap_kustomer.transform import transform_for_key
-from tap_kustomer.tests.denest_nodes_data import *
+from tap_kustomer.tests.denest_nodes_data import NESTED_VALID_DICTS
 from tap_kustomer.tests.stream_configs import STREAMS
 from tap_kustomer.error import AssertionException
 
@@ -32,22 +31,9 @@ def test_transform():
     """Test snake to camel transformation.
     """
     transformed_data = transform_json(NESTED_VALID_DICTS,
-                                      STREAMS.get('customers_no_denest'),
+                                      STREAMS.get(
+                                          'customers_no_denest'),
                                       'data')
-    key_iterator_assert_no_snake(transformed_data)
-
-
-def test_transform_camel():
-    transformed_data = transform_for_key(NESTED_VALID_DICTS,
-                                         STREAMS.get('customers_no_denest'),
-                                         'data')
-    key_iterator_assert_no_snake(transformed_data)
-
-
-def test_transform_for_key_dict_list():
-    transformed_data = transform_for_key(DICTIONARY_LIST,
-                                         STREAMS.get('customers_no_denest'),
-                                         '')
     key_iterator_assert_no_snake(transformed_data)
 
 
@@ -58,8 +44,10 @@ def test_denest_nodes():
     """
     transformed_data = denest(NESTED_VALID_DICTS, 'data',
                               'attributes,relationships.data')
-    assert not (any('attributes' in data for data in transformed_data))
-    assert not (any('relationships' in data for data in transformed_data))
+    assert not (
+        any('attributes' in data for data in transformed_data))
+    assert not (
+        any('relationships' in data for data in transformed_data))
     assert '5a79d3e2c8b66e0001ba953e' == transformed_data['data'][0]['org'][
         'id']
     assert 'sla_data' in transformed_data['data'][0]
